@@ -19,7 +19,19 @@
 <main>
   <section class="hero">
     <h1>Quanto tempo até a stamina encher?</h1>
-    <p class="hero-sub">Arraste pra sua stamina atual e veja o tempo até full em cada atividade.</p>
+    <p class="hero-sub">Digite a stamina que você está agora e veja o tempo até full em cada atividade.</p>
+
+    <div class="stamina-input-row">
+      <label class="field field--inline">
+        <span>horas</span>
+        <input type="number" id="curH" min="0" max="42" step="1" value="42" />
+      </label>
+      <label class="field field--inline">
+        <span>minutos</span>
+        <input type="number" id="curM" min="0" max="59" step="1" value="0" />
+      </label>
+      <span id="zoneBadge" class="zone-badge zone-badge--green">zona verde</span>
+    </div>
 
     <div class="meter-wrap">
       <div class="meter-track">
@@ -33,16 +45,6 @@
         <span class="meter-scale-mark" style="left: 92.857%;">39:00</span>
         <span>42:00</span>
       </div>
-    </div>
-
-    <input type="range" id="staminaSlider" class="stamina-slider" min="0" max="2520" step="5" value="2520" />
-
-    <div class="readout-row">
-      <div class="readout">
-        <span class="readout-label">stamina atual</span>
-        <span id="readoutValue" class="readout-value">42h 00min</span>
-      </div>
-      <span id="zoneBadge" class="zone-badge zone-badge--green">zona verde</span>
     </div>
 
     <div class="chip-row">
@@ -74,7 +76,7 @@
   <section class="planner">
     <div class="planner-head">
       <h2>Planejador de caçadas diárias</h2>
-      <p class="hero-sub">Veja quanto esperar entre a primeira e a segunda sessão de caçada.</p>
+      <p class="hero-sub">Zona verde dá +50% de xp. Pra manter o bônus, cada sessão precisa terminar com stamina ≥ 39:00 — o planejador calcula isso pra você.</p>
     </div>
 
     <div class="planner-card">
@@ -87,11 +89,11 @@
       <div class="form-grid">
         <label class="field">
           <span>sessão 1 (h)</span>
-          <input type="number" id="h1" min="0" max="42" step="0.5" value="3" />
+          <input type="number" id="h1" min="0" max="3" step="0.5" value="3" />
         </label>
         <label class="field">
           <span>sessão 2 (h)</span>
-          <input type="number" id="h2" min="0" max="42" step="0.5" value="2" />
+          <input type="number" id="h2" min="0" max="3" step="0.5" value="2" />
         </label>
         <label class="field">
           <span>stamina inicial (h)</span>
@@ -106,6 +108,11 @@
           </select>
         </label>
       </div>
+
+      <label class="toggle">
+        <input type="checkbox" id="keepGreen" checked />
+        <span>manter cada sessão inteira na zona verde (+50% xp)</span>
+      </label>
 
       <label class="toggle">
         <input type="checkbox" id="useExt" checked />

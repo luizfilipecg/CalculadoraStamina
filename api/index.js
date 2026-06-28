@@ -134,6 +134,7 @@ app.post('/api/planejador-cacada', (req, res) => {
       staminaInicialHoras = 42,
       atividadeIntervalo = 'offline',
       usarExtension = false,
+      manterZonaVerde = true,
     } = req.body ?? {};
 
     if (typeof horasSessao1 !== 'number' || typeof horasSessao2 !== 'number') {
@@ -143,12 +144,26 @@ app.post('/api/planejador-cacada', (req, res) => {
       return res.status(400).json({ erro: `"atividadeIntervalo" inválida. Use uma de: ${ATIVIDADES.join(', ')}` });
     }
 
-    let stam = Math.min(horasParaMinutos(staminaInicialHoras), FULL);
-
     const need1 = horasParaMinutos(horasSessao1);
+    const need2 = horasParaMinutos(horasSessao2);
+
+    // Se a sessão precisa ficar inteira na zona verde (bônus de +50% xp),
+    // ela tem que TERMINAR com stamina >= GREEN_START (39:00). Isso define
+    // a stamina mínima necessária antes de cada sessão começar.
+    const req1 = manterZonaVerde ? Math.min(GREEN_START + need1, FULL) : need1;
+    const req2 = manterZonaVerde ? Math.min(GREEN_START + need2, FULL) : need2;
+
     const avisos = [];
-    if (stam < need1) {
-      avisos.push(`Stamina insuficiente para a sessão 1: faltam ${formatarMinutos(need1 - stam)}.`);
+    if (manterZonaVerde && GREEN_START + need1 > FULL) {
+      avisos.push(`A sessão 1 (${horasSessao1}h) não cabe inteira na zona verde — o máximo é ${formatarMinutos(FULL - GREEN_START)}.`);
+    }
+    if (manterZonaVerde && GREEN_START + need2 > FULL) {
+      avisos.push(`A sessão 2 (${horasSessao2}h) não cabe inteira na zona verde — o máximo é ${formatarMinutos(FULL - GREEN_START)}.`);
+    }
+
+    let stam = Math.min(horasParaMinutos(staminaInicialHoras), FULL);
+    if (stam < req1) {
+      avisos.push(`Stamina insuficiente para a sessão 1${manterZonaVerde ? ' ficar inteira na zona verde' : ''}: faltam ${formatarMinutos(req1 - stam)}.`);
     }
     const afterS1 = Math.max(stam - need1, 0);
 
@@ -157,9 +172,8 @@ app.post('/api/planejador-cacada', (req, res) => {
       staminaParaIntervalo = Math.min(staminaParaIntervalo + 60, FULL);
     }
 
-    const need2 = horasParaMinutos(horasSessao2);
-    const gap = timeToReach(staminaParaIntervalo, need2, atividadeIntervalo);
-    const staminaAntesS2 = Math.max(staminaParaIntervalo, need2);
+    const gap = timeToReach(staminaParaIntervalo, req2, atividadeIntervalo);
+    const staminaAntesS2 = Math.max(staminaParaIntervalo, req2);
     const afterS2 = Math.max(staminaAntesS2 - need2, 0);
 
     return res.json({
@@ -170,6 +184,14 @@ app.post('/api/planejador-cacada', (req, res) => {
         staminaAposFormatada: formatarMinutos(afterS1),
       },
       extensionAplicada: usarExtension,
+      staminaNecessariaSessao1: {
+        minutos: Math.round(req1),
+        formatada: formatarMinutos(req1),
+      },
+      staminaNecessariaSessao2: {
+        minutos: Math.round(req2),
+        formatada: formatarMinutos(req2),
+      },
       staminaParaIntervalo: {
         minutos: Math.round(staminaParaIntervalo),
         formatada: formatarMinutos(staminaParaIntervalo),
