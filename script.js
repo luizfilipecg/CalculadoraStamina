@@ -44,6 +44,26 @@ function clamp(v, min, max) {
 }
 
 // ---------------------------------------------------------------------------
+// Abas
+// ---------------------------------------------------------------------------
+
+const tabs = document.querySelectorAll('.tab');
+const panels = document.querySelectorAll('.tab-panel');
+
+tabs.forEach((tab) => {
+  tab.addEventListener('click', () => {
+    tabs.forEach((t) => {
+      t.classList.remove('active');
+      t.setAttribute('aria-selected', 'false');
+    });
+    tab.classList.add('active');
+    tab.setAttribute('aria-selected', 'true');
+    panels.forEach((p) => p.classList.remove('active'));
+    document.getElementById('panel-' + tab.dataset.tab).classList.add('active');
+  });
+});
+
+// ---------------------------------------------------------------------------
 // Stamina atual / tempo até full
 // ---------------------------------------------------------------------------
 
