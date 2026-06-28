@@ -10,6 +10,9 @@
   --bevel-dark: #0a0805;
   --gold: #c9a227;
   --gold-bright: #e8c14a;
+  --brass: #7a5f2a;
+  --brass-light: #a4843f;
+  --brass-dark: #3a2c12;
   --parchment: #e8dab5;
   --text: #d8c9a3;
   --text-muted: #8f7f5c;
@@ -172,8 +175,8 @@ main {
   font-family: var(--font-heading);
   font-size: 13px;
   letter-spacing: 0.05em;
-  color: var(--stone-950);
-  background: linear-gradient(180deg, var(--gold-bright), var(--gold));
+  color: var(--parchment);
+  background: linear-gradient(180deg, var(--brass-light), var(--brass));
   padding: 10px 16px;
   border-bottom: 2px solid var(--bevel-dark);
 }
@@ -260,7 +263,9 @@ main {
 
 .meter-scale-mark {
   position: absolute;
-  transform: translateX(-50%);
+  transform: translateX(-100%);
+  padding-right: 6px;
+  left: min(92.857%, calc(100% - 38px)) !important;
 }
 
 /* ---------- zone badge ---------- */
@@ -414,22 +419,22 @@ main {
   font-family: var(--font-heading);
   font-size: 13px;
   letter-spacing: 0.04em;
-  background: linear-gradient(180deg, var(--gold-bright), var(--gold));
-  color: var(--stone-950);
+  background: linear-gradient(180deg, var(--brass-light), var(--brass));
+  color: var(--parchment);
   padding: 12px;
   cursor: pointer;
   margin-top: 6px;
-  border-top: 2px solid #f3da7d;
-  border-left: 2px solid #f3da7d;
-  border-bottom: 2px solid #8a6c19;
-  border-right: 2px solid #8a6c19;
+  border-top: 2px solid #c2a05a;
+  border-left: 2px solid #c2a05a;
+  border-bottom: 2px solid var(--brass-dark);
+  border-right: 2px solid var(--brass-dark);
 }
 
 .cta:active {
-  border-top: 2px solid #8a6c19;
-  border-left: 2px solid #8a6c19;
-  border-bottom: 2px solid #f3da7d;
-  border-right: 2px solid #f3da7d;
+  border-top: 2px solid var(--brass-dark);
+  border-left: 2px solid var(--brass-dark);
+  border-bottom: 2px solid #c2a05a;
+  border-right: 2px solid #c2a05a;
 }
 
 /* ---------- timeline ---------- */
