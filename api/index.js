@@ -69,6 +69,18 @@ function horasParaMinutos(h) {
   return Math.round(h * 60);
 }
 
+/**
+ * Formata uma quantidade de STAMINA (nunca passa de 42h, então nunca
+ * mostra "dias" — diferente de formatarMinutos, que é para durações de
+ * espera, essas sim podem passar de 24h).
+ */
+function formatarStamina(minutos) {
+  minutos = Math.round(minutos);
+  const horas = Math.floor(minutos / 60);
+  const min = minutos % 60;
+  return `${horas}h ${String(min).padStart(2, '0')}min`;
+}
+
 // ---------------------------------------------------------------------------
 // Endpoint 1: tempo até a stamina ficar full
 // GET /api/tempo-ate-full?horas=10&minutos=30&atividade=offline
@@ -155,15 +167,15 @@ app.post('/api/planejador-cacada', (req, res) => {
 
     const avisos = [];
     if (manterZonaVerde && GREEN_START + need1 > FULL) {
-      avisos.push(`A sessão 1 (${horasSessao1}h) não cabe inteira na zona verde — o máximo é ${formatarMinutos(FULL - GREEN_START)}.`);
+      avisos.push(`A sessão 1 (${horasSessao1}h) não cabe inteira na zona verde — o máximo é ${formatarStamina(FULL - GREEN_START)}.`);
     }
     if (manterZonaVerde && GREEN_START + need2 > FULL) {
-      avisos.push(`A sessão 2 (${horasSessao2}h) não cabe inteira na zona verde — o máximo é ${formatarMinutos(FULL - GREEN_START)}.`);
+      avisos.push(`A sessão 2 (${horasSessao2}h) não cabe inteira na zona verde — o máximo é ${formatarStamina(FULL - GREEN_START)}.`);
     }
 
     let stam = Math.min(horasParaMinutos(staminaInicialHoras), FULL);
     if (stam < req1) {
-      avisos.push(`Stamina insuficiente para a sessão 1${manterZonaVerde ? ' ficar inteira na zona verde' : ''}: faltam ${formatarMinutos(req1 - stam)}.`);
+      avisos.push(`Stamina insuficiente para a sessão 1${manterZonaVerde ? ' ficar inteira na zona verde' : ''}: faltam ${formatarStamina(req1 - stam)}.`);
     }
     const afterS1 = Math.max(stam - need1, 0);
 
@@ -181,20 +193,20 @@ app.post('/api/planejador-cacada', (req, res) => {
       sessao1: {
         horas: horasSessao1,
         staminaAposMinutos: Math.round(afterS1),
-        staminaAposFormatada: formatarMinutos(afterS1),
+        staminaAposFormatada: formatarStamina(afterS1),
       },
       extensionAplicada: usarExtension,
       staminaNecessariaSessao1: {
         minutos: Math.round(req1),
-        formatada: formatarMinutos(req1),
+        formatada: formatarStamina(req1),
       },
       staminaNecessariaSessao2: {
         minutos: Math.round(req2),
-        formatada: formatarMinutos(req2),
+        formatada: formatarStamina(req2),
       },
       staminaParaIntervalo: {
         minutos: Math.round(staminaParaIntervalo),
-        formatada: formatarMinutos(staminaParaIntervalo),
+        formatada: formatarStamina(staminaParaIntervalo),
       },
       intervaloNecessario: {
         minutos: Math.round(gap),
@@ -204,7 +216,7 @@ app.post('/api/planejador-cacada', (req, res) => {
       sessao2: {
         horas: horasSessao2,
         staminaAposMinutos: Math.round(afterS2),
-        staminaAposFormatada: formatarMinutos(afterS2),
+        staminaAposFormatada: formatarStamina(afterS2),
       },
       tempoTotalAteSessao2: formatarMinutos(need1 + gap),
     });

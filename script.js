@@ -30,6 +30,15 @@ function fmt(mins) {
   return s;
 }
 
+// Stamina nunca passa de 42h, então nunca mostra "dias" — diferente de fmt(),
+// que é para durações de espera (essas sim podem passar de 24h).
+function fmtStamina(mins) {
+  mins = Math.round(mins);
+  const h = Math.floor(mins / 60);
+  const m = mins % 60;
+  return h + 'h ' + String(m).padStart(2, '0') + 'min';
+}
+
 function clamp(v, min, max) {
   return Math.min(Math.max(v, min), max);
 }
@@ -129,15 +138,15 @@ function calcPlanLocal({ horasSessao1, horasSessao2, staminaInicialHoras, ativid
 
   const avisos = [];
   if (manterZonaVerde && GREEN_START + need1 > FULL) {
-    avisos.push(`A sessão 1 (${horasSessao1}h) não cabe inteira na zona verde — o máximo é ${fmt(FULL - GREEN_START)}.`);
+    avisos.push(`A sessão 1 (${horasSessao1}h) não cabe inteira na zona verde — o máximo é ${fmtStamina(FULL - GREEN_START)}.`);
   }
   if (manterZonaVerde && GREEN_START + need2 > FULL) {
-    avisos.push(`A sessão 2 (${horasSessao2}h) não cabe inteira na zona verde — o máximo é ${fmt(FULL - GREEN_START)}.`);
+    avisos.push(`A sessão 2 (${horasSessao2}h) não cabe inteira na zona verde — o máximo é ${fmtStamina(FULL - GREEN_START)}.`);
   }
 
   let stam = clamp(staminaInicialHoras * 60, 0, FULL);
   if (stam < req1) {
-    avisos.push(`Stamina insuficiente para a sessão 1${manterZonaVerde ? ' ficar inteira na zona verde' : ''}: faltam ${fmt(req1 - stam)}.`);
+    avisos.push(`Stamina insuficiente para a sessão 1${manterZonaVerde ? ' ficar inteira na zona verde' : ''}: faltam ${fmtStamina(req1 - stam)}.`);
   }
   const afterS1 = Math.max(stam - need1, 0);
 
@@ -152,17 +161,17 @@ function calcPlanLocal({ horasSessao1, horasSessao2, staminaInicialHoras, ativid
 
   return {
     avisos,
-    sessao1: { horas: horasSessao1, staminaAposMinutos: afterS1, staminaAposFormatada: fmt(afterS1) },
+    sessao1: { horas: horasSessao1, staminaAposMinutos: afterS1, staminaAposFormatada: fmtStamina(afterS1) },
     extensionAplicada: usarExtension,
-    staminaNecessariaSessao1: { minutos: req1, formatada: fmt(req1) },
-    staminaNecessariaSessao2: { minutos: req2, formatada: fmt(req2) },
-    staminaParaIntervalo: { minutos: staminaParaIntervalo, formatada: fmt(staminaParaIntervalo) },
+    staminaNecessariaSessao1: { minutos: req1, formatada: fmtStamina(req1) },
+    staminaNecessariaSessao2: { minutos: req2, formatada: fmtStamina(req2) },
+    staminaParaIntervalo: { minutos: staminaParaIntervalo, formatada: fmtStamina(staminaParaIntervalo) },
     intervaloNecessario: {
       minutos: gap,
       formatado: gap <= 0 ? 'pode entrar na hora' : fmt(gap),
       atividade: atividadeIntervalo,
     },
-    sessao2: { horas: horasSessao2, staminaAposMinutos: afterS2, staminaAposFormatada: fmt(afterS2) },
+    sessao2: { horas: horasSessao2, staminaAposMinutos: afterS2, staminaAposFormatada: fmtStamina(afterS2) },
     tempoTotalAteSessao2: fmt(need1 + gap),
   };
 }
